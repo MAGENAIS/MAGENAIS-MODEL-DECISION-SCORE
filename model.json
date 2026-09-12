@@ -19,6 +19,6 @@
   },
   "trust": "experimental",
   "uri": "magenais://decision-score@1.0.0",
-  "repository": "MAGENAIS-MODEL-DECISION-SCORE",
+  "repository": "https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE",
   "documentation": "https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE#readme"
 }

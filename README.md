@@ -1,14 +1,9 @@
 # DecisionScore
 
 Explainable multi-criteria decision intelligence. Part of the
-[MAGENAIS Model Hub](https://github.com/MAGENAIS/MAGENAIS-MODELS),
+[MAGENAIS Models Zoo](https://github.com/MAGENAIS/MAGENAIS-MODELS),
 but fully independent — you can use this package without installing or
 running MAGENAIS at all.
-
-See [magenais.github.io/MAGENAIS-MODEL-DECISION-SCORE](https://magenais.github.io/MAGENAIS-MODEL-DECISION-SCORE/)
-for a browsable landing page with a worked example (once GitHub Pages is
-enabled for this repo — Settings → Pages → deploy from `main`).
-
 
 > **Research-oriented.** DecisionScore is a MAGENAIS research model. Its
 > metrics (DSI, DFP) are original names for well-understood ideas in
