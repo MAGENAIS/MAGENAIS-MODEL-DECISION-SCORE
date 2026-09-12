@@ -1,7 +1,7 @@
 # DecisionScore
 
 Explainable multi-criteria decision intelligence. Part of the
-[MAGENAIS Models Zoo](https://github.com/MAGENAIS/MAGENAIS-MODELS),
+[MAGENAIS Model Hub](https://github.com/MAGENAIS/MAGENAIS-MODELS),
 but fully independent — you can use this package without installing or
 running MAGENAIS at all.
 
