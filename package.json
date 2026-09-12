@@ -1,0 +1,36 @@
+{
+  "name": "@magenais/decision-score",
+  "version": "1.0.0",
+  "description": "Explainable multi-criteria decision intelligence — ranking, Decision Stability Index (DSI), and Decision Flip Point (DFP). Zero runtime dependencies.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "example": "node --experimental-strip-types examples/basic-usage.mjs"
+  },
+  "keywords": [
+    "decision-intelligence",
+    "multi-criteria-decision-analysis",
+    "mcda",
+    "explainable-ai",
+    "sensitivity-analysis",
+    "magenais"
+  ],
+  "author": {
+    "name": "MAGENAIS"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PLACEHOLDER_GITHUB_USERNAME/MAGENAIS-MODEL-DECISION-SCORE.git"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
