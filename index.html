@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DecisionScore — explainable multi-criteria decision intelligence</title>
+<meta name="description" content="DecisionScore ranks options against weighted criteria and reports a Decision Stability Index and Decision Flip Point for how confident that ranking is. Zero dependencies, runs locally." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #E9EDEC;
+    --paper-raised: #F3F5F4;
+    --ink: #171D1C;
+    --ink-soft: #454F4D;
+    --rule: #C7CFCD;
+    --accent: #1F6F78;
+    --accent-ink: #0F3E43;
+    --status-dev: #A9784F;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:hover { color: var(--accent); }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  header.hero { padding: 56px 0 36px; border-bottom: 1px solid var(--rule); }
+  .kicker { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); margin: 0 0 18px; }
+  .kicker a { color: var(--ink-soft); }
+
+  .id-line { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 6px; }
+  h1 { font-size: clamp(2rem, 4.2vw, 2.7rem); line-height: 1.15; margin: 0 0 16px; font-weight: 600; max-width: 16ch; }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 58ch; margin: 0 0 24px; }
+
+  dl.badges { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; font-family: var(--mono); font-size: 0.88rem; }
+  dl.badges div { display: flex; gap: 6px; color: var(--ink-soft); }
+  dl.badges dt::after { content: ":"; }
+  dl.badges dd { margin: 0; color: var(--ink); }
+
+  main { padding: 44px 0 96px; }
+  section + section { margin-top: 48px; }
+  h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 6px; }
+  .section-note { color: var(--ink-soft); font-size: 0.98rem; max-width: 62ch; margin: 0 0 22px; }
+  p.body-text { max-width: 66ch; margin: 0 0 14px; }
+
+  .disclaimer {
+    border-left: 3px solid var(--status-dev);
+    background: var(--paper-raised);
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+
+  pre.example {
+    background: var(--ink);
+    color: #DCE7E5;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    padding: 20px 22px;
+    border-radius: 4px;
+    overflow-x: auto;
+    line-height: 1.6;
+  }
+  pre.example .muted { color: #8FA19D; }
+  pre.example .accent { color: #7FD4CE; }
+
+  table.ranking { border-collapse: collapse; width: 100%; margin: 18px 0 8px; font-size: 0.95rem; }
+  table.ranking th, table.ranking td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
+  table.ranking th { font-family: var(--mono); font-weight: 500; color: var(--ink-soft); font-size: 0.8rem; }
+  table.ranking td.num { font-family: var(--mono); }
+
+  ul.plain { padding-left: 1.1em; margin: 0 0 0; max-width: 62ch; }
+  ul.plain li { margin-bottom: 6px; }
+
+  .resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px 32px; padding: 0; margin: 0; list-style: none; }
+  .resources li { border-top: 1px solid var(--rule); padding-top: 14px; }
+  .resources a { font-weight: 600; display: block; margin-bottom: 4px; }
+  .resources span { color: var(--ink-soft); font-size: 0.92rem; }
+
+  footer { border-top: 1px solid var(--rule); padding: 28px 0 56px; color: var(--ink-soft); font-size: 0.9rem; }
+  footer a { color: var(--ink-soft); }
+
+  @media (max-width: 520px) {
+    header.hero { padding-top: 40px; }
+    body { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="kicker"><a href="https://github.com/MAGENAIS">MAGENAIS</a> / <a href="https://magenais.github.io/MAGENAIS-MODELS/">Models</a> / DecisionScore</p>
+      <p class="id-line">magenais.decision-score · v1.0.0</p>
+      <h1>Explainable multi-criteria decision intelligence.</h1>
+      <p class="lede">Ranks options against weighted criteria, then tells you how much to trust the ranking: a Decision Stability Index for how robust it is, and a Decision Flip Point for exactly what would change it.</p>
+      <dl class="badges">
+        <div><dt>License</dt><dd>Apache-2.0</dd></div>
+        <div><dt>Type</dt><dd>algorithm</dd></div>
+        <div><dt>Trust</dt><dd>experimental</dd></div>
+        <div><dt>Dependencies</dt><dd>zero</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+
+      <section id="about">
+        <h2>What it does</h2>
+        <p class="body-text">Given a set of options scored against weighted criteria, DecisionScore normalizes the scores, computes a weighted ranking, then runs two sensitivity checks: how often the top choice survives random perturbation of the weights (DSI), and how large a weight change would be needed to flip it (DFP).</p>
+        <p class="body-text">It is a research-oriented model — the ranking method itself (normalized weighted sum) is a well-known technique from multi-criteria decision analysis; DSI and DFP are this model's own framing of sensitivity on top of it, not a claim of a new ranking algorithm. See <a href="./docs/algorithm.md">docs/algorithm.md</a> for the full method.</p>
+      </section>
+
+      <section id="example">
+        <h2>Worked example</h2>
+        <p class="section-note">Output of <a href="./examples/basic-usage.mjs">examples/basic-usage.mjs</a>, run with a fixed seed — reproducible byte-for-byte.</p>
+
+        <table class="ranking">
+          <thead><tr><th>Rank</th><th>Option</th><th>Score</th></tr></thead>
+          <tbody>
+            <tr><td class="num">1</td><td>Vendor B</td><td class="num">0.667</td></tr>
+            <tr><td class="num">2</td><td>Vendor A</td><td class="num">0.422</td></tr>
+            <tr><td class="num">3</td><td>Vendor C</td><td class="num">0.333</td></tr>
+          </tbody>
+        </table>
+
+        <pre class="example"><span class="muted">Decision Stability Index (DSI):</span> <span class="accent">1.00</span>
+
+<span class="muted">Decision Flip Points:</span>
+  Quality: a 70.0% decrease would flip the top choice to "vendor-c"
+  Price:   a 105.0% increase would flip the top choice to "vendor-c"
+  Support: no flip found within the tested range</pre>
+
+        <p class="disclaimer">This is a sensitivity estimate under tested assumptions. It is not a guarantee.</p>
+      </section>
+
+      <section id="limitations">
+        <h2>Limitations</h2>
+        <ul class="plain">
+          <li>Assumes criteria are roughly commensurable once normalized — it doesn't model strong non-linear trade-offs.</li>
+          <li><code>constraints</code> on the input is documentation-only in v1.0.0, not numerically enforced.</li>
+          <li>DSI/DFP are estimates over a tested perturbation range, not an exhaustive or formally-proven bound.</li>
+        </ul>
+      </section>
+
+      <section id="resources">
+        <h2>Get started</h2>
+        <ul class="resources">
+          <li><a href="./README.md">README</a><span>Install, API, full example</span></li>
+          <li><a href="./docs/algorithm.md">Algorithm</a><span>Ranking, DSI, and DFP explained in full</span></li>
+          <li><a href="./tests/decisionScore.test.ts">Tests</a><span>27 tests, node:test</span></li>
+          <li><a href="./CHANGELOG.md">Changelog</a><span>Version history</span></li>
+          <li><a href="https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE">Source on GitHub</a><span>Clone, fork, or open an issue</span></li>
+          <li><a href="https://magenais.github.io/MAGENAIS-MODELS/">MAGENAIS Models catalog</a><span>Browse all models</span></li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Apache-2.0 licensed. Independent of MAGENAIS Core, which is separate and proprietary — this package runs without it and depends on nothing from it.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ This package has **zero runtime dependencies** and needs no install step
 to develop:
 
 ```bash
-git clone https://github.com/PLACEHOLDER_GITHUB_USERNAME/MAGENAIS-MODEL-DECISION-SCORE.git
+git clone https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE.git
 cd MAGENAIS-MODEL-DECISION-SCORE
 npm test          # node --experimental-strip-types --test tests/*.test.ts
 npm run example   # runs examples/basic-usage.mjs
