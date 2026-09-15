@@ -7,95 +7,340 @@
 <meta name="description" content="DecisionScore ranks options against weighted criteria and reports a Decision Stability Index and Decision Flip Point for how confident that ranking is. Zero dependencies, runs locally." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+
 :root {
---paper: #E9EDEC;
---paper-raised: #F3F5F4;
---ink: #171D1C;
---ink-soft: #454F4D;
---rule: #C7CFCD;
---accent: #1F6F78;
---accent-ink: #0F3E43;
---status-dev: #A9784F;
---serif: "Source Serif 4", Georgia, "Times New Roman", serif;
---mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --navy: #0B1220;
+  --navy-2: #121B2E;
+  --navy-soft: #1B2842;
+  --paper: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface-2: #F3F4F2;
+  --border: #E4E3DE;
+  --ink: #14181A;
+  --ink-soft: #5A6260;
+  --ink-faint: #8A928F;
+  --gold: #C9973F;
+  --gold-ink: #7A5A1E;
+  --teal: #1F6F78;
+  --ok: #1F6F78;
+  --dev: #A9784F;
+  --planned: #6B7674;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --head: "Space Grotesk", var(--sans);
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px rgba(15,20,20,.06), 0 1px 1px rgba(15,20,20,.04);
+  --shadow-md: 0 8px 24px rgba(15,20,20,.08), 0 2px 6px rgba(15,20,20,.05);
 }
 * { box-sizing: border-box; }
-html { color-scheme: light; }
+html { color-scheme: light; scroll-behavior: smooth; }
 body {
-margin: 0;
-background: var(--paper);
-color: var(--ink);
-font-family: var(--serif);
-font-size: 17px;
-line-height: 1.55;
--webkit-font-smoothing: antialiased;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
 }
-a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-a:hover { color: var(--accent); }
-a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
-header.hero { padding: 56px 0 36px; border-bottom: 1px solid var(--rule); }
-.kicker { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); margin: 0 0 18px; }
-.kicker a { color: var(--ink-soft); }
-.id-line { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 6px; }
-h1 { font-size: clamp(2rem, 4.2vw, 2.7rem); line-height: 1.15; margin: 0 0 16px; font-weight: 600; max-width: 16ch; }
-.lede { font-size: 1.15rem; color: var(--ink-soft); max-width: 58ch; margin: 0 0 24px; }
-dl.badges { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; font-family: var(--mono); font-size: 0.88rem; }
-dl.badges div { display: flex; gap: 6px; color: var(--ink-soft); }
+a { color: var(--gold-ink); text-decoration: none; }
+a:hover { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 3px; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 28px; }
+h1, h2, h3 { font-family: var(--head); font-weight: 600; letter-spacing: -0.01em; color: var(--ink); }
+
+/* ---- Top nav ---- */
+.topnav {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(11,18,32,.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.navwrap { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+.brand { display: flex; align-items: baseline; gap: 8px; color: #F4F2EC; font-family: var(--head); font-weight: 700; font-size: 1.05rem; letter-spacing: 0.01em; }
+.brand:hover { color: #F4F2EC; text-decoration: none; }
+.brand-mark { color: var(--gold); }
+.brand-sub { font-family: var(--mono); font-weight: 500; font-size: 0.7rem; color: #9AA5B5; letter-spacing: 0.08em; text-transform: uppercase; padding-left: 6px; border-left: 1px solid rgba(255,255,255,.18); }
+.navlinks { display: flex; gap: 26px; }
+.navlinks a { color: #C9CFDA; font-size: 0.92rem; font-weight: 500; margin-left: 26px; }
+.navlinks a:first-child { margin-left: 0; }
+.navlinks a:hover { color: #fff; text-decoration: none; }
+.navlinks a.is-active { color: var(--gold); }
+
+/* ---- Hero ---- */
+header.hero {
+  background:
+    radial-gradient(1100px 420px at 85% -10%, rgba(201,151,63,.20), transparent 60%),
+    linear-gradient(180deg, var(--navy) 0%, var(--navy-2) 100%);
+  color: #F4F2EC;
+  padding: 64px 0 56px;
+}
+.breadcrumb { font-family: var(--mono); font-size: 12.5px; color: #9AA5B5; margin: 0 0 22px; letter-spacing: .01em; }
+.breadcrumb a { color: #9AA5B5; }
+.breadcrumb a:hover { color: var(--gold); }
+.breadcrumb span { margin: 0 6px; color: #4C5768; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 12.5px; color: #E7DCC4;
+  background: rgba(201,151,63,.12); border: 1px solid rgba(201,151,63,.35);
+  padding: 5px 12px; border-radius: 999px; margin: 0 0 20px;
+}
+header.hero h1 { font-size: clamp(1.35rem, 2.1vw, 1.6rem); font-weight: 500; line-height: 1.32; margin: 0 0 18px; color: #C6CCD6; max-width: 46ch; }
+header.hero h1 .accent { color: var(--gold); }
+.lede { font-size: 1.15rem; color: #C6CCD6; max-width: 60ch; margin: 0 0 30px; font-weight: 400; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 34px; }
+.hero-actions .btn { margin: 0 12px 12px 0; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 8px; font-weight: 600; font-size: 0.94rem; border: 1px solid transparent; transition: transform .12s ease, box-shadow .12s ease; }
+.btn:hover { text-decoration: none; }
+.btn-primary { background: var(--gold); color: #241905; }
+.btn-primary:hover { background: #D9A94F; color: #241905; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(201,151,63,.35); }
+.btn-ghost { background: transparent; color: #F4F2EC; border-color: rgba(255,255,255,.28); }
+.btn-ghost:hover { background: rgba(255,255,255,.08); color: #fff; transform: translateY(-1px); }
+dl.badges { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+dl.badges div { display: flex; gap: 6px; align-items: center; font-family: var(--mono); font-size: 12.5px; color: #C6CCD6; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); padding: 6px 12px; border-radius: 7px; margin: 0 10px 10px 0; }
+dl.badges dt { color: #8C96A6; }
 dl.badges dt::after { content: ":"; }
-dl.badges dd { margin: 0; color: var(--ink); }
-main { padding: 44px 0 96px; }
-section + section { margin-top: 48px; }
-h2 { font-size: 1.05rem; font-weight: 600; margin: 0 0 6px; }
-.section-note { color: var(--ink-soft); font-size: 0.98rem; max-width: 62ch; margin: 0 0 22px; }
-p.body-text { max-width: 66ch; margin: 0 0 14px; }
+dl.badges dd { margin: 0; color: #F0EDE4; font-weight: 500; }
+
+/* ---- Main / cards ---- */
+main { padding: 56px 0 30px; }
+section + section { margin-top: 34px; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px 36px;
+  box-shadow: var(--shadow-sm);
+}
+.section-eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold-ink); margin: 0 0 8px; font-weight: 600; }
+h2 { font-size: 1.35rem; margin: 0 0 14px; }
+.section-note { color: var(--ink-soft); font-size: 0.98rem; max-width: 62ch; margin: 0 0 20px; }
+p.body-text { max-width: 68ch; margin: 0 0 14px; color: var(--ink); }
+p.body-text:last-child { margin-bottom: 0; }
 .disclaimer {
-border-left: 3px solid var(--status-dev);
-background: var(--paper-raised);
-padding: 12px 18px;
-font-size: 0.95rem;
-color: var(--ink-soft);
-max-width: 62ch;
+  border-left: 3px solid var(--dev);
+  background: var(--surface-2);
+  padding: 12px 18px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  border-radius: 0 8px 8px 0;
+  margin-top: 18px;
 }
-pre.example {
-background: var(--ink);
-color: #DCE7E5;
-font-family: var(--mono);
-font-size: 0.85rem;
-padding: 20px 22px;
-border-radius: 4px;
-overflow-x: auto;
-line-height: 1.6;
+.terminal {
+  background: var(--navy);
+  color: #DCE7E5;
+  font-family: var(--mono);
+  font-size: 0.86rem;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 18px 0 0;
+  box-shadow: var(--shadow-md);
 }
-pre.example .muted { color: #8FA19D; }
-pre.example .accent { color: #7FD4CE; }
-table.ranking { border-collapse: collapse; width: 100%; margin: 18px 0 8px; font-size: 0.95rem; }
-table.ranking th, table.ranking td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--rule); }
-table.ranking th { font-family: var(--mono); font-weight: 500; color: var(--ink-soft); font-size: 0.8rem; }
+.terminal-bar { display: flex; gap: 6px; padding: 11px 14px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08); }
+.terminal-dot { width: 10px; height: 10px; border-radius: 50%; background: #4C5768; }
+.terminal pre { margin: 0; padding: 20px 22px; overflow-x: auto; line-height: 1.65; }
+.terminal .muted { color: #7C8D89; }
+.terminal .accent { color: #E4C583; font-weight: 600; }
+table.ranking { border-collapse: collapse; width: 100%; margin: 4px 0 0; font-size: 0.92rem; }
+table.ranking th, table.ranking td { text-align: left; padding: 10px 14px 10px 0; border-bottom: 1px solid var(--border); }
+table.ranking th { font-family: var(--mono); font-weight: 600; color: var(--ink-soft); font-size: 0.74rem; text-transform: uppercase; letter-spacing: .05em; }
 table.ranking td.num { font-family: var(--mono); }
-ul.plain { padding-left: 1.1em; margin: 0 0 0; max-width: 62ch; }
-ul.plain li { margin-bottom: 6px; }
-.resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 18px 32px; padding: 0; margin: 0; list-style: none; }
-.resources li { border-top: 1px solid var(--rule); padding-top: 14px; }
-.resources a { font-weight: 600; display: block; margin-bottom: 4px; }
-.resources span { color: var(--ink-soft); font-size: 0.92rem; }
-footer { border-top: 1px solid var(--rule); padding: 28px 0 56px; color: var(--ink-soft); font-size: 0.9rem; }
-footer a { color: var(--ink-soft); }
-@media (max-width: 520px) {
-header.hero { padding-top: 40px; }
-body { font-size: 16px; }
+table.ranking tr:last-child td { border-bottom: none; }
+ul.plain { list-style: none; padding: 0; margin: 0; max-width: 66ch; display: flex; flex-direction: column; gap: 12px; }
+ul.plain li { position: relative; padding-left: 24px; color: var(--ink); }
+ul.plain li::before { content: "—"; position: absolute; left: 0; color: var(--gold-ink); font-weight: 700; }
+code { font-family: var(--mono); background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: 0.88em; }
+.resources { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 0; margin: 0; list-style: none; }
+.resources li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease; }
+.resources li:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #D9CBA3; }
+.resources a { font-weight: 600; display: block; margin-bottom: 5px; font-size: 0.98rem; }
+.resources span { color: var(--ink-soft); font-size: 0.88rem; }
+
+/* ---- Catalog-specific record cards ---- */
+ul.records { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+.record {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 26px 30px; box-shadow: var(--shadow-sm); transition: box-shadow .15s ease, border-color .15s ease;
 }
+.record:hover { box-shadow: var(--shadow-md); border-color: #D9CBA3; }
+.record-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+.record-id { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-faint); margin: 0 0 3px; }
+.record-name { font-size: 1.3rem; font-family: var(--head); font-weight: 600; margin: 0; }
+.status { font-family: var(--mono); font-size: 0.72rem; padding: 5px 11px; border-radius: 999px; white-space: nowrap; font-weight: 600; letter-spacing: .02em; }
+.status.live { color: #0E4B45; background: #DCEDE9; border: 1px solid #B7D9D1; }
+.status.dev { color: var(--dev); background: #F5EBDE; border: 1px solid #E3CDA9; }
+.status.planned { color: var(--planned); background: #EEEEEC; border: 1px solid #D8D8D5; }
+.record-desc { max-width: 66ch; color: var(--ink); margin: 0 0 14px; }
+dl.meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 0 0 6px; font-size: 0.84rem; font-family: var(--mono); color: var(--ink-soft); }
+dl.meta div { display: flex; gap: 5px; margin-right: 22px; }
+dl.meta div:last-child { margin-right: 0; }
+dl.meta dt::after { content: ":"; }
+dl.meta dd { margin: 0; color: var(--ink); }
+.record-link { font-size: 0.92rem; font-weight: 600; margin: 10px 0 0; }
+.empty-note { font-size: 0.88rem; color: var(--ink-faint); font-style: italic; margin-top: 4px; }
+
+/* ---- Footer ---- */
+footer { background: var(--navy); color: #C6CCD6; margin-top: 72px; }
+.footer-top { padding: 52px 0 36px; display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 32px; }
+.footer-brand-mark { font-family: var(--mono); font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; margin: 0 0 10px; }
+.footer-brand-mark a { color: #F4F2EC; }
+.footer-brand-mark a:hover { color: #fff; text-decoration: none; }
+.footer-brand-mark .brand-mark { color: var(--gold); }
+.footer-blurb { font-size: 0.92rem; color: #9AA5B5; max-width: 34ch; margin: 0; }
+.footer-col h3 { font-family: var(--mono); font-size: 11px; letter-spacing: .09em; text-transform: uppercase; color: #7C879A; margin: 0 0 14px; font-weight: 600; }
+.footer-col a { display: block; color: #C6CCD6; font-size: 0.92rem; margin-bottom: 10px; }
+.footer-col a:hover { color: #fff; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding: 22px 0 40px; font-size: 0.84rem; color: #7C879A; }
+.footer-bottom p { margin: 0; max-width: 74ch; }
+
+@media (max-width: 720px) {
+  .footer-top { grid-template-columns: 1fr; gap: 26px; }
+  .navlinks { gap: 16px; }
+  .card { padding: 24px 22px; }
+  header.hero { padding: 44px 0 40px; }
+  main { padding: 40px 0 20px; }
+}
+@media (max-width: 480px) {
+  .navlinks a:not(.always-show) { display: none; }
+}
+
+
+/* ============================================================
+   V2 — Header matched to the MAGENAIS app shell, bold model
+   name treatment, in-page document viewer, catalog grid.
+   ============================================================ */
+
+/* ---- Header: rebuilt to match the MAGENAIS app topbar ---- */
+.topnav {
+  background: #0B0C0C;
+  border-bottom: 1px solid rgba(255,255,255,.09);
+}
+.navwrap { display: flex; align-items: center; justify-content: space-between; height: auto; padding: 12px 0; }
+a.brand { display: flex; align-items: center; gap: 12px; }
+a.brand:hover { text-decoration: none; }
+.brand-logo { height: 36px; width: auto; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); flex-shrink: 0; }
+.brand-text { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
+.brand-text .mark {
+  font-family: var(--mono); font-weight: 700; font-size: 16.5px; letter-spacing: .05em;
+  color: #FBFAF6;
+}
+.brand-text .mark .accent { color: var(--gold); }
+.brand-text .tag {
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: #9AA5B5; padding-top: 1px;
+}
+@media (max-width: 480px) { .brand-text .tag { display: none; } }
+
+/* ---- Bold model name, top of hero ---- */
+.model-name {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-family: var(--mono); font-weight: 700; letter-spacing: .01em;
+  font-size: clamp(2.3rem, 5vw, 3.2rem);
+  color: #FBFAF6; margin: 0 0 14px;
+}
+.model-name .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(201,151,63,.2); flex-shrink: 0; margin-right: 4px; }
+.model-name .pill {
+  font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .02em;
+  color: #E7DCC4; background: rgba(201,151,63,.14); border: 1px solid rgba(201,151,63,.35);
+  padding: 3px 10px; border-radius: 999px; text-transform: none; margin-left: 6px;
+}
+
+/* ---- In-page document viewer (replaces navigating to a raw file) ---- */
+[data-doc] { cursor: pointer; }
+.doc-modal-backdrop {
+  position: fixed; inset: 0; z-index: 200; display: none;
+  background: rgba(6,8,10,.66); backdrop-filter: blur(3px);
+  align-items: flex-start; justify-content: center; padding: 6vh 20px;
+}
+.doc-modal-backdrop.open { display: flex; }
+.doc-modal {
+  background: var(--surface); width: 100%; max-width: 780px; max-height: 86vh;
+  border-radius: 14px; overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 0 30px 70px rgba(0,0,0,.45);
+}
+.doc-modal-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 22px; background: var(--navy); border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.doc-modal-head-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.doc-modal-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: #9AA5B5; }
+.doc-modal-title { font-family: var(--mono); font-size: 14px; color: #FBFAF6; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-modal-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.doc-modal-raw {
+  font-family: var(--mono); font-size: 11px; color: #C6CCD6; border: 1px solid rgba(255,255,255,.22);
+  border-radius: 6px; padding: 5px 10px; background: transparent;
+}
+.doc-modal-raw:hover { background: rgba(255,255,255,.08); color: #fff; text-decoration: none; }
+.doc-modal-close {
+  background: none; border: none; color: #C6CCD6; font-size: 20px; line-height: 1;
+  cursor: pointer; padding: 4px 9px; border-radius: 6px;
+}
+.doc-modal-close:hover { background: rgba(255,255,255,.1); color: #fff; }
+.doc-modal-body { padding: 26px 32px 36px; overflow-y: auto; font-size: .97rem; }
+.doc-modal-body h1, .doc-modal-body h2, .doc-modal-body h3 { font-family: var(--head); margin: 1.3em 0 .5em; }
+.doc-modal-body h1:first-child, .doc-modal-body h2:first-child, .doc-modal-body h3:first-child { margin-top: 0; }
+.doc-modal-body p { margin: 0 0 1em; color: var(--ink); }
+.doc-modal-body ul { margin: 0 0 1em; padding-left: 22px; }
+.doc-modal-body li { margin-bottom: .4em; }
+.doc-modal-body pre {
+  background: var(--navy); color: #DCE7E5; padding: 16px 18px; border-radius: 10px;
+  overflow-x: auto; font-family: var(--mono); font-size: .84rem; line-height: 1.6; margin: 0 0 1.2em;
+}
+.doc-modal-body pre code { background: none; padding: 0; color: inherit; }
+.doc-modal-body :not(pre) > code { font-family: var(--mono); background: var(--surface-2); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+.doc-modal-body a { color: var(--gold-ink); }
+.doc-modal-body table { border-collapse: collapse; width: 100%; margin: 0 0 1.2em; font-size: .88rem; }
+.doc-modal-body th, .doc-modal-body td { border: 1px solid var(--border); padding: 7px 11px; text-align: left; }
+.doc-modal-body th { background: var(--surface-2); font-family: var(--mono); font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); }
+.doc-modal-status { font-family: var(--mono); font-size: .86rem; color: var(--ink-faint); }
+@media (max-width: 640px) { .doc-modal-body { padding: 20px 20px 28px; } .doc-modal-backdrop { padding: 0; align-items: stretch; } .doc-modal { max-width: none; max-height: none; height: 100vh; border-radius: 0; } }
+
+/* ---- Catalog: professional grid of model cards ---- */
+ul.records.grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;
+  list-style: none; margin: 0; padding: 0;
+}
+ul.records.grid > li { display: flex; }
+ul.records.grid .record {
+  display: flex; flex-direction: column; width: 100%;
+  border-top: 3px solid var(--gold);
+  position: relative;
+}
+.record-icon {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-soft) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-weight: 700; font-size: 16px; color: var(--gold);
+}
+.record-titles { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.record-name { font-size: 1.28rem; font-family: var(--head); font-weight: 700; margin: 0; color: var(--ink); }
+.record-id { font-family: var(--mono); font-size: .74rem; color: var(--ink-faint); margin: 1px 0 0; }
+.record-desc { flex-grow: 1; }
+.record-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
 </style>
 </head>
 <body>
+<nav class="topnav">
+<div class="wrap navwrap">
+<a class="brand" href="https://magenais.github.io/MAGENAIS-Public/"><img class="brand-logo" src="./assets/magenais-logo.png" alt="MAGENAIS" aria-hidden="true"><span class="brand-text"><span class="mark">MAGENAI<span class="accent">S</span></span><span class="tag">Models &middot; DecisionScore</span></span></a>
+<div class="navlinks">
+<a href="https://magenais.github.io/MAGENAIS-MODELS/" class="is-active">Models Hub</a><a href="./docs/algorithm.md" data-doc data-doc-title="Algorithm">Docs</a><a href="https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE">GitHub</a>
+</div>
+</div>
+</nav>
 <header class="hero">
 <div class="wrap">
-<p class="kicker"><a href="https://github.com/MAGENAIS">MAGENAIS</a> / <a href="https://magenais.github.io/MAGENAIS-MODELS/">Models</a> / DecisionScore</p>
-<p class="id-line">magenais.decision-score · v1.0.0</p>
-<h1>Explainable multi-criteria decision intelligence.</h1>
+<p class="breadcrumb"><a href="https://magenais.github.io/MAGENAIS-Public/">MAGENAIS</a><span>/</span><a href="https://magenais.github.io/MAGENAIS-MODELS/">Models</a><span>/</span>DecisionScore</p>
+<div class="model-name"><span class="dot"></span>DecisionScore<span class="pill">magenais.decision-score &middot; v1.0.0 &middot; published</span></div>
+<h1>Explainable multi-criteria <span class="accent">decision intelligence.</span></h1>
 <p class="lede">Ranks options against weighted criteria, then tells you how much to trust the ranking: a Decision Stability Index for how robust it is, and a Decision Flip Point for exactly what would change it.</p>
+<div class="hero-actions">
+<a class="btn btn-primary" href="https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE">View on GitHub</a>
+<a class="btn btn-ghost" href="./docs/algorithm.md" data-doc data-doc-title="Algorithm">Read the algorithm</a>
+</div>
 <dl class="badges">
 <div><dt>License</dt><dd>Apache-2.0</dd></div>
 <div><dt>Type</dt><dd>algorithm</dd></div>
@@ -106,55 +351,188 @@ body { font-size: 16px; }
 </header>
 <main>
 <div class="wrap">
+
 <section id="about">
+<div class="card">
+<p class="section-eyebrow">Overview</p>
 <h2>What it does</h2>
-<p class="body-text">Given a set of options scored against weighted criteria, DecisionScore normalizes the scores, computes a weighted ranking, then runs two sensitivity checks: how often the top choice survives random perturbation of the weights (DSI), and how large a weight change would be needed to flip it (DFP).</p>
-<p class="body-text">It is a research-oriented model — the ranking method itself (normalized weighted sum) is a well-known technique from multi-criteria decision analysis; DSI and DFP are this model's own framing of sensitivity on top of it, not a claim of a new ranking algorithm. See <a href="./docs/algorithm.md">docs/algorithm.md</a> for the full method.</p>
+<p class="body-text">Given a set of options scored against weighted criteria, DecisionScore normalizes the scores, computes a weighted ranking, then runs two sensitivity checks: how often the top choice survives random perturbation of the weights (DSI), and how large a weight change would be needed to flip it (DFP).</p><p class="body-text">It is a research-oriented model — the ranking method itself (normalized weighted sum) is a well-known technique from multi-criteria decision analysis; DSI and DFP are this model's own framing of sensitivity on top of it, not a claim of a new ranking algorithm. See <a href="./docs/algorithm.md" data-doc data-doc-title="Algorithm">docs/algorithm.md</a> for the full method.</p>
+</div>
 </section>
+
 <section id="example">
+<div class="card">
+<p class="section-eyebrow">Example</p>
 <h2>Worked example</h2>
-<p class="section-note">Output of <a href="./examples/basic-usage.mjs">examples/basic-usage.mjs</a>, run with a fixed seed — reproducible byte-for-byte.</p>
+<p class="section-note">Output of <a href="./examples/basic-usage.mjs" data-doc data-doc-title="examples/basic-usage.mjs">examples/basic-usage.mjs</a>, run with a fixed seed — reproducible byte-for-byte.</p>
 <table class="ranking">
 <thead><tr><th>Rank</th><th>Option</th><th>Score</th></tr></thead>
 <tbody>
-<tr><td class="num">1</td><td>Vendor B</td><td class="num">0.667</td></tr>
-<tr><td class="num">2</td><td>Vendor A</td><td class="num">0.422</td></tr>
-<tr><td class="num">3</td><td>Vendor C</td><td class="num">0.333</td></tr>
+<tr><td class="num">1</td><td>Vendor B</td><td class="num">0.667</td></tr><tr><td class="num">2</td><td>Vendor A</td><td class="num">0.422</td></tr><tr><td class="num">3</td><td>Vendor C</td><td class="num">0.333</td></tr>
 </tbody>
 </table>
-<pre class="example"><span class="muted">Decision Stability Index (DSI):</span> <span class="accent">1.00</span>
+<div class="terminal">
+<div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span></div>
+<pre><span class="muted">Decision Stability Index (DSI):</span> <span class="accent">1.00</span>
 
 <span class="muted">Decision Flip Points:</span>
 Quality: a 70.0% decrease would flip the top choice to "vendor-c"
 Price: a 105.0% increase would flip the top choice to "vendor-c"
 Support: no flip found within the tested range</pre>
+</div>
 <p class="disclaimer">This is a sensitivity estimate under tested assumptions. It is not a guarantee.</p>
+</div>
 </section>
+
 <section id="limitations">
+<div class="card">
+<p class="section-eyebrow">Know before you use it</p>
 <h2>Limitations</h2>
 <ul class="plain">
-<li>Assumes criteria are roughly commensurable once normalized — it doesn't model strong non-linear trade-offs.</li>
-<li><code>constraints</code> on the input is documentation-only in v1.0.0, not numerically enforced.</li>
-<li>DSI/DFP are estimates over a tested perturbation range, not an exhaustive or formally-proven bound.</li>
+<li>Assumes criteria are roughly commensurable once normalized — it doesn't model strong non-linear trade-offs.</li><li><code>constraints</code> on the input is documentation-only in v1.0.0, not numerically enforced.</li><li>DSI/DFP are estimates over a tested perturbation range, not an exhaustive or formally-proven bound.</li>
 </ul>
+</div>
 </section>
+
 <section id="resources">
+<p class="section-eyebrow">Next steps</p>
 <h2>Get started</h2>
 <ul class="resources">
-<li><a href="./README.md">README</a><span>Install, API, full example</span></li>
-<li><a href="./docs/algorithm.md">Algorithm</a><span>Ranking, DSI, and DFP explained in full</span></li>
-<li><a href="./tests/decisionScore.test.ts">Tests</a><span>27 tests, node:test</span></li>
-<li><a href="./CHANGELOG.md">Changelog</a><span>Version history</span></li>
-<li><a href="https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE">Source on GitHub</a><span>Clone, fork, or open an issue</span></li>
-<li><a href="https://magenais.github.io/MAGENAIS-MODELS/">MAGENAIS Models catalog</a><span>Browse all models</span></li>
+<li><a href="./README.md" data-doc data-doc-title="README.md">README</a><span>Install, API, full example</span></li><li><a href="./docs/algorithm.md" data-doc data-doc-title="Algorithm">Algorithm</a><span>Ranking, DSI, and DFP explained in full</span></li><li><a href="./tests/decisionScore.test.ts" data-doc data-doc-title="tests/decisionScore.test.ts">Tests</a><span>27 tests, node:test</span></li><li><a href="./CHANGELOG.md" data-doc data-doc-title="CHANGELOG.md">Changelog</a><span>Version history</span></li><li><a href="https://github.com/MAGENAIS/MAGENAIS-MODEL-DECISION-SCORE">Source on GitHub</a><span>Clone, fork, or open an issue</span></li><li><a href="https://magenais.github.io/MAGENAIS-MODELS/">MAGENAIS Models catalog</a><span>Browse all models</span></li>
 </ul>
 </section>
+
 </div>
 </main>
 <footer>
-<div class="wrap">
+<div class="wrap footer-top">
+<div>
+<p class="footer-brand-mark"><a href="https://magenais.github.io/MAGENAIS-Public/"><span class="brand-mark">M</span>AGENAIS Models</a></p>
+<p class="footer-blurb">A catalog of independent, open-source, research-oriented models. Runs locally — no API key, no account, no cloud service required.</p>
+</div>
+<div class="footer-col">
+<h3>DECISIONSCORE</h3>
+<a href="./README.md" data-doc data-doc-title="README.md">README</a>
+<a href="./docs/algorithm.md" data-doc data-doc-title="Algorithm">Algorithm</a>
+<a href="./CHANGELOG.md" data-doc data-doc-title="CHANGELOG.md">Changelog</a>
+<a href="./tests/decisionScore.test.ts" data-doc data-doc-title="tests/decisionScore.test.ts">Tests</a>
+</div>
+<div class="footer-col">
+<h3>MAGENAIS</h3>
+<a href="https://magenais.github.io/MAGENAIS-Public/">MAGENAIS App</a>
+<a href="https://magenais.github.io/MAGENAIS-MODELS/">Models catalog</a>
+<a href="https://github.com/MAGENAIS">GitHub organization</a>
+<a href="https://github.com/MAGENAIS/MAGENAIS-MODELS/blob/main/CONTRIBUTING.md">Contributing</a>
+</div>
+</div>
+<div class="wrap footer-bottom">
 <p>Apache-2.0 licensed. Independent of MAGENAIS Core, which is separate and proprietary — this package runs without it and depends on nothing from it.</p>
 </div>
 </footer>
+
+<script id="__doc_data__" type="application/json">{"./README.md": "# DecisionScore\n\nExplainable multi-criteria decision intelligence. Part of the\n[MAGENAIS Model Hub](https://github.com/MAGENAIS/MAGENAIS-MODELS),\nbut fully independent — you can use this package without installing or\nrunning MAGENAIS at all.\n\n> **Research-oriented.** DecisionScore is a MAGENAIS research model. Its\n> metrics (DSI, DFP) are original names for well-understood ideas in\n> multi-criteria decision analysis (weighted-sum scoring and sensitivity\n> analysis); no novelty claim is made beyond that framing. See\n> [Research direction](#research-direction).\n\n## What it does\n\nGiven a set of **options** scored against a set of weighted **criteria**,\nDecisionScore:\n\n1. Normalizes each criterion's scores to a common [0, 1] scale (accounting\n   for whether higher-is-better or lower-is-better).\n2. Computes a weighted sum per option and ranks them.\n3. Estimates **Decision Stability Index (DSI)** — the proportion of\n   randomized weight perturbations under which the top choice stays the\n   same.\n4. Estimates **Decision Flip Point (DFP)** — how much a given criterion's\n   weight would need to change, and in which direction, before a\n   different option takes first place.\n\nBoth DSI and DFP are **sensitivity estimates under tested assumptions —\nnot guarantees.** DecisionScore does not claim to predict the \"correct\"\ndecision; it quantifies how confidently the data supports the one it\ncomputed.\n\n## Input\n\n```ts\ninterface DecisionScoreInput {\n  options: { id: string; name?: string }[];\n  criteria: {\n    id: string;\n    name?: string;\n    weight: number; // relative importance; need not sum to 1\n    direction: 'maximize' | 'minimize';\n  }[];\n  scores: Record<string /* optionId */, Record<string /* criterionId */, number>>;\n  constraints?: string[]; // free-form notes, not evaluated numerically in v1.0.0\n}\n```\n\n## Output\n\n```ts\ninterface DecisionScoreOutput {\n  ranking: { optionId: string; name?: string; score: number; rank: number }[];\n  topOptionId: string | null;\n  dsi: number; // Decision Stability Index, 0–1\n  dfp: {\n    criterionId: string;\n    criterionName?: string;\n    direction: 'increase' | 'decrease';\n    relativeChange: number | null; // e.g. 0.15 = 15%; null if no flip found in range\n    challengerOptionId: string | null;\n  }[];\n}\n```\n\n## Algorithm\n\n- **Ranking:** normalized weighted-sum (a.k.a. Simple Additive Weighting /\n  SAW). Each criterion's column is min-max normalized across the given\n  options (inverted for `minimize` criteria), then combined using each\n  criterion's normalized weight.\n- **DSI:** repeatedly perturbs each criterion's weight by a random factor\n  (seeded, so results are reproducible) within a configurable magnitude,\n  recomputes the ranking, and reports the fraction of trials where the top\n  option didn't change.\n- **DFP:** for each criterion, sweeps its weight up and down (renormalizing\n  the rest proportionally) in small steps until the top option changes,\n  and reports the smallest relative change that did so.\n\n## Example\n\n```ts\nimport { DecisionScoreModel } from '@magenais/decision-score';\n\nconst model = new DecisionScoreModel();\n\nconst response = await model.execute({\n  input: {\n    options: [\n      { id: 'vendor-a', name: 'Vendor A' },\n      { id: 'vendor-b', name: 'Vendor B' },\n    ],\n    criteria: [\n      { id: 'price', weight: 2, direction: 'minimize' },\n      { id: 'quality', weight: 3, direction: 'maximize' },\n    ],\n    scores: {\n      'vendor-a': { price: 8000, quality: 7 },\n      'vendor-b': { price: 9500, quality: 9 },\n    },\n  },\n});\n\nconsole.log(response.output.ranking);\nconsole.log(response.explanation);\n```\n\nSee `examples/basic-usage.mjs` for a runnable version of this.\n\n## Limitations\n\n- Weighted-sum scoring assumes criteria are at least roughly\n  commensurable once normalized; it does not model strong non-linear\n  trade-offs between criteria.\n- `constraints` is currently a documentation-only field — it is not\n  enforced numerically in v1.0.0.\n- DSI/DFP are estimates over a *tested* perturbation range, not an\n  exhaustive or formally-proven sensitivity bound.\n\n## Research direction\n\nDSI and DFP are designed to be subjected to literature review,\nbenchmarking against established multi-criteria decision analysis (MCDA)\nsensitivity techniques, ablation studies, and statistical validation.\nContributions in that direction are welcome — see `CONTRIBUTING.md`.\n\n## Version\n\n`1.0.0` — versioned independently of MAGENAIS itself.\n\n## License\n\nApache-2.0. See `LICENSE`.\n", "./docs/algorithm.md": "# Algorithm\n\n## 1. Ranking (normalized weighted sum)\n\nGiven options `O = {o_1, ..., o_n}` and criteria `C = {c_1, ..., c_m}` each\nwith a raw weight `w_j >= 0` and a direction (`maximize` or `minimize`):\n\n1. **Normalize weights.** `W_j = w_j / Σw_j`, so weights sum to 1.\n2. **Normalize scores per criterion (min-max).** For criterion `c_j`, let\n   `min_j` and `max_j` be the minimum/maximum raw score across all options.\n   For option `o_i`:\n   - if `max_j == min_j` (every option has the same score on this\n     criterion), the criterion is **non-discriminating**: every option\n     gets a normalized value of `1` for it, and it is reported separately\n     in the response (it contributes its full weight equally to every\n     option, so it does not change the ranking, but this is surfaced\n     rather than hidden).\n   - otherwise: `scaled = (raw - min_j) / (max_j - min_j)`, then\n     `normalized = scaled` if `maximize`, or `normalized = 1 - scaled` if\n     `minimize`. Either way, `1` always means \"best on this criterion.\"\n3. **Weighted sum.** `score(o_i) = Σ_j W_j * normalized(o_i, c_j)`, which\n   lands in `[0, 1]`.\n4. **Rank** options by descending `score`. Ties keep input order (stable\n   sort); exact ties are visible via equal `score` values rather than\n   collapsed into a single rank.\n\nThis is the classic **Simple Additive Weighting (SAW)** method from\nmulti-criteria decision analysis (MCDA) — DecisionScore does not claim to\nhave invented weighted-sum scoring; its contribution is packaging it with\nthe two sensitivity metrics below in an explainable, model-contract shape.\n\n## 2. Decision Stability Index (DSI)\n\n**Question it answers:** \"If my weight estimates are somewhat off, would I\nstill pick the same option?\"\n\n**Method:**\n\n1. Run `trials` times (default 200).\n2. On each trial, multiply every criterion's raw weight by an independent\n   random factor drawn uniformly from `[1 - magnitude, 1 + magnitude]`\n   (default `magnitude = 0.2`, i.e. ±20%), using a seeded PRNG\n   ([mulberry32](https://github.com/bryc/code/blob/master/jshash/PRNGs.md))\n   so the same `(input, seed)` always reproduces the same trials.\n3. Re-run the full ranking procedure (§1) on the perturbed weights.\n4. `DSI = (number of trials where the top option is unchanged) / trials`.\n\nA single option is a degenerate case: it is trivially always \"the top\noption,\" so `DSI = 1` without running any trials.\n\n**Interpretation:** `DSI = 0.92` means the top choice was unchanged in 92%\nof the tested perturbations — a rough gauge of how much of the decision's\n\"confidence\" comes from the specific weight values you supplied, versus\nbeing robust across a plausible range around them.\n\n## 3. Decision Flip Point (DFP)\n\n**Question it answers:** \"How much would criterion X's importance need to\nchange, and in which direction, before a different option becomes the top\nchoice — and to which option?\"\n\n**Method:** for each criterion, independently:\n\n1. Starting from the baseline (unperturbed) weights, sweep a relative\n   change `δ` from `step` up to `maxRange` (defaults: `step = 0.05`,\n   `maxRange = 5`, i.e. up to a 500% change) in both the `increase` and\n   `decrease` direction.\n2. At each `δ`, scale that criterion's raw weight by `(1 + δ)` (clamped at\n   0 for decreases), **renormalize all weights** (§1 step 1) so they still\n   sum to 1 — this is what makes the change meaningful: increasing one\n   criterion's share necessarily decreases the others' relative share —\n   and recompute the ranking.\n3. The first `δ` (smallest magnitude) at which the top option changes is\n   the flip point for that direction. If no `δ` up to `maxRange` produces\n   a flip, `relativeChange` is reported as `null` for that direction.\n4. Per criterion, the smaller (more sensitive) of the increase/decrease\n   flip points is kept; if neither direction found a flip within range,\n   `relativeChange: null` is reported for that criterion.\n5. Criteria are sorted most-sensitive-first (smallest non-null\n   `relativeChange` first; `null` entries last).\n\nA single option is degenerate: there is no other option to flip to, so\nevery criterion reports `relativeChange: null`.\n\n**Interpretation:** a DFP entry like `{ criterionId: \"quality\", direction:\n\"decrease\", relativeChange: 0.15, challengerOptionId: \"vendor-c\" }` means:\nif \"quality\"'s weight were reduced by roughly 15% (with the rest\nrenormalized accordingly), \"vendor-c\" would overtake the current top\nchoice.\n\n## What this is not\n\n- Not a causal model. Sensitivity here is purely about the arithmetic of\n  the weighted sum, not about any real-world mechanism.\n- Not exhaustive. Both metrics test a *bounded, tested* range of\n  perturbations — a flip point beyond `maxRange`, or a form of uncertainty\n  not captured by proportional weight scaling (e.g. correlated errors in\n  the raw *scores* rather than the weights), is out of scope for v1.0.0.\n- Not a substitute for domain judgment about whether the criteria,\n  weights, and raw scores themselves are the right ones to begin with.\n\n## Research direction\n\nCandidate directions for follow-up validation (see `CONTRIBUTING.md`):\n\n- Compare DSI/DFP's perturbation-based sensitivity against established\n  MCDA sensitivity-analysis techniques (e.g. one-at-a-time weight sweeps\n  as commonly used with SAW/WSM, or gradient-based sensitivity for\n  differentiable scoring rules).\n- Ablation on perturbation distribution choice (uniform vs. normal) and\n  its effect on DSI's reported value for the same input.\n- Empirical calibration: for a corpus of real multi-criteria decisions\n  with known \"was the top choice regretted\" outcomes, does DSI correlate\n  with regret rate?\n", "./CHANGELOG.md": "# Changelog\n\nAll notable changes to this project will be documented in this file.\nFormat loosely follows [Keep a Changelog](https://keepachangelog.com/), and\nthis project uses [Semantic Versioning](https://semver.org/), independent\nof MAGENAIS's own version.\n\n## [Unreleased]\n\nNothing yet.\n\n## [1.0.0] — not yet released\n\nPrepared during MAGENAIS V4.1 Phase 3. Not yet published — see\n`../DECISIONSCORE-REPO-READY.md` in the MAGENAIS repository for the\npublish checklist and remaining GitHub-repository checkpoint.\n\n### Added\n\n- `DecisionScoreModel` implementing the shared `Model` contract\n  (`execute()` → normalized `ModelResponse`).\n- Normalized weighted-sum ranking algorithm (`DecisionScoreAlgorithm.ts`)\n  with full input validation.\n- Decision Stability Index (DSI): seeded, reproducible perturbation testing\n  of criterion weights.\n- Decision Flip Point (DFP): deterministic sweep per criterion to find the\n  smallest weight change that flips the top-ranked option.\n- Unit tests covering: a 3-option/4-criterion known-ranking case, DSI,\n  DFP, empty input, invalid input, missing values, single-row data, a\n  small dataset, and a larger (25-option) synthetic dataset.\n- Runnable example (`examples/basic-usage.mjs`).\n- `model.json` manifest, Apache-2.0 `LICENSE`, `SECURITY.md`,\n  `CONTRIBUTING.md`.\n", "./examples/basic-usage.mjs": "// Runnable example — no MAGENAIS installation required.\n//\n// Usage:\n//   node --experimental-strip-types examples/basic-usage.mjs\n// (or: npm run example)\n\nimport { DecisionScoreModel } from '../src/index.ts';\n\nconst model = new DecisionScoreModel();\n\nconst response = await model.execute({\n  input: {\n    options: [\n      { id: 'vendor-a', name: 'Vendor A' },\n      { id: 'vendor-b', name: 'Vendor B' },\n      { id: 'vendor-c', name: 'Vendor C' },\n    ],\n    criteria: [\n      { id: 'price', name: 'Price', weight: 2, direction: 'minimize' },\n      { id: 'quality', name: 'Quality', weight: 3, direction: 'maximize' },\n      { id: 'support', name: 'Support', weight: 1, direction: 'maximize' },\n    ],\n    scores: {\n      'vendor-a': { price: 8000, quality: 7, support: 6 },\n      'vendor-b': { price: 9500, quality: 9, support: 8 },\n      'vendor-c': { price: 7000, quality: 6, support: 5 },\n    },\n  },\n  options: {\n    // Fixed seed => reproducible DSI across runs.\n    seed: 42,\n    perturbationTrials: 200,\n  },\n});\n\nconsole.log('Ranking:');\nfor (const entry of response.output.ranking) {\n  console.log(`  ${entry.rank}. ${entry.name ?? entry.optionId} — score ${entry.score.toFixed(3)}`);\n}\n\nconsole.log(`\\nDecision Stability Index (DSI): ${response.output.dsi.toFixed(2)}`);\n\nconsole.log('\\nDecision Flip Points:');\nfor (const flip of response.output.dfp) {\n  const label = flip.criterionName ?? flip.criterionId;\n  if (flip.relativeChange === null) {\n    console.log(`  ${label}: no flip found within the tested range`);\n  } else {\n    console.log(\n      `  ${label}: a ${(flip.relativeChange * 100).toFixed(1)}% ${flip.direction} would flip the top choice to \"${flip.challengerOptionId}\"`\n    );\n  }\n}\n\nconsole.log(`\\n${response.explanation}`);\n", "./tests/decisionScore.test.ts": "/**\n * Unit tests for the standalone DecisionScore package. This is the same\n * test suite as MAGENAIS's tests/unit/decisionScore.test.ts (only the\n * import paths differ) — kept in sync deliberately, since this package's\n * src/ is the source of truth per MASTER PROMPT §28 and MAGENAIS's copy\n * exists only until it is replaced by a dependency on this published\n * package (see ../DECISIONSCORE-REPO-READY.md).\n */\nimport { test, describe } from 'node:test';\nimport assert from 'node:assert/strict';\nimport {\n  validateInput,\n  DecisionScoreValidationError,\n  scoreAndRank,\n} from '../src/DecisionScoreAlgorithm.ts';\nimport { computeDSI, computeDFP } from '../src/DecisionStability.ts';\nimport { DecisionScoreModel } from '../src/DecisionScoreModel.ts';\nimport type { DecisionScoreInput } from '../src/types.ts';\n\n/**\n * 3 options / 4 criteria fixture with a deliberately clear winner: option\n * \"b\" dominates or ties on every maximize criterion and beats the others on\n * the minimize criterion, so the expected top rank is unambiguous.\n */\nfunction threeByFourFixture(): DecisionScoreInput {\n  return {\n    options: [\n      { id: 'a', name: 'Option A' },\n      { id: 'b', name: 'Option B' },\n      { id: 'c', name: 'Option C' },\n    ],\n    criteria: [\n      { id: 'quality', name: 'Quality', weight: 3, direction: 'maximize' },\n      { id: 'speed', name: 'Speed', weight: 2, direction: 'maximize' },\n      { id: 'features', name: 'Features', weight: 2, direction: 'maximize' },\n      { id: 'cost', name: 'Cost', weight: 1, direction: 'minimize' },\n    ],\n    scores: {\n      a: { quality: 6, speed: 7, features: 5, cost: 40 },\n      b: { quality: 9, speed: 8, features: 9, cost: 50 },\n      c: { quality: 4, speed: 5, features: 6, cost: 20 },\n    },\n  };\n}\n\ndescribe('DecisionScoreAlgorithm — validation', () => {\n  test('rejects empty options', () => {\n    const input = { ...threeByFourFixture(), options: [] };\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects empty criteria', () => {\n    const input = { ...threeByFourFixture(), criteria: [] };\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects completely empty input object', () => {\n    // @ts-expect-error — deliberately malformed for the test\n    assert.throws(() => validateInput({}), DecisionScoreValidationError);\n  });\n\n  test('rejects invalid direction', () => {\n    const input = threeByFourFixture();\n    // @ts-expect-error — deliberately invalid for the test\n    input.criteria[0].direction = 'sideways';\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects negative weight', () => {\n    const input = threeByFourFixture();\n    input.criteria[0].weight = -1;\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects all-zero weights', () => {\n    const input = threeByFourFixture();\n    for (const c of input.criteria) c.weight = 0;\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects duplicate option ids', () => {\n    const input = threeByFourFixture();\n    input.options[1].id = 'a';\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects missing score values', () => {\n    const input = threeByFourFixture();\n    delete (input.scores.b as Record<string, number>).cost;\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects non-numeric score values', () => {\n    const input = threeByFourFixture();\n    // @ts-expect-error — deliberately invalid for the test\n    input.scores.b.cost = 'fifty';\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('rejects a missing score row entirely (single-row-style gap)', () => {\n    const input = threeByFourFixture();\n    // @ts-expect-error — deliberately invalid for the test\n    delete input.scores.c;\n    assert.throws(() => validateInput(input), DecisionScoreValidationError);\n  });\n\n  test('accepts a valid single-option, single-criterion input (minimal valid case)', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'only' }],\n      criteria: [{ id: 'c1', weight: 1, direction: 'maximize' }],\n      scores: { only: { c1: 10 } },\n    };\n    assert.doesNotThrow(() => validateInput(input));\n  });\n});\n\ndescribe('DecisionScoreAlgorithm — known ranking', () => {\n  test('3 options / 4 criteria: known weights produce the known expected ranking', () => {\n    const input = threeByFourFixture();\n    const { ranking } = scoreAndRank(input);\n    assert.equal(ranking.length, 3);\n    assert.equal(ranking[0].optionId, 'b');\n    assert.equal(ranking[0].rank, 1);\n    assert.equal(ranking[2].rank, 3);\n    // Every normalized score must land in [0, 1].\n    for (const entry of ranking) {\n      assert.ok(entry.score >= 0 && entry.score <= 1);\n    }\n  });\n\n  test('single-row data: one option always ranks first with score 1', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'only' }],\n      criteria: [\n        { id: 'c1', weight: 1, direction: 'maximize' },\n        { id: 'c2', weight: 1, direction: 'minimize' },\n      ],\n      scores: { only: { c1: 5, c2: 5 } },\n    };\n    const { ranking } = scoreAndRank(input);\n    assert.equal(ranking.length, 1);\n    assert.equal(ranking[0].rank, 1);\n    assert.equal(ranking[0].score, 1);\n  });\n\n  test('small dataset (2 options, 1 criterion) ranks the higher score first', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'x' }, { id: 'y' }],\n      criteria: [{ id: 'c1', weight: 1, direction: 'maximize' }],\n      scores: { x: { c1: 1 }, y: { c1: 9 } },\n    };\n    const { ranking } = scoreAndRank(input);\n    assert.equal(ranking[0].optionId, 'y');\n    assert.equal(ranking[1].optionId, 'x');\n  });\n\n  test('a constant (non-discriminating) criterion is reported and does not throw', () => {\n    const input = threeByFourFixture();\n    input.scores.a.speed = 7;\n    input.scores.b.speed = 7;\n    input.scores.c.speed = 7;\n    const { constantCriteria } = scoreAndRank(input);\n    assert.deepEqual(constantCriteria, ['speed']);\n  });\n\n  test('larger synthetic dataset (25 options, 6 criteria) produces a complete, valid ranking', () => {\n    const criteria = Array.from({ length: 6 }, (_, i) => ({\n      id: `c${i}`,\n      weight: i + 1,\n      direction: (i % 2 === 0 ? 'maximize' : 'minimize') as const,\n    }));\n    // Deterministic pseudo-random-looking but reproducible scores (no RNG — a fixed formula).\n    const options = Array.from({ length: 25 }, (_, i) => ({ id: `opt${i}` }));\n    const scores: DecisionScoreInput['scores'] = {};\n    for (const option of options) {\n      const n = Number(option.id.replace('opt', ''));\n      scores[option.id] = {};\n      for (const c of criteria) {\n        const k = Number(c.id.replace('c', ''));\n        scores[option.id][c.id] = ((n * 7 + k * 13) % 97) + 1;\n      }\n    }\n    const input: DecisionScoreInput = { options, criteria, scores };\n    const { ranking } = scoreAndRank(input);\n    assert.equal(ranking.length, 25);\n    const ranks = ranking.map((r) => r.rank).sort((a, b) => a - b);\n    assert.deepEqual(ranks, Array.from({ length: 25 }, (_, i) => i + 1));\n  });\n});\n\ndescribe('Decision Stability Index (DSI)', () => {\n  test('a landslide winner has a high DSI under moderate perturbation', () => {\n    const input = threeByFourFixture();\n    const { dsi, trials } = computeDSI(input, 'b', { trials: 300, magnitude: 0.15, seed: 1 });\n    assert.equal(trials, 300);\n    assert.ok(dsi > 0.5, `expected a dominant winner to have DSI > 0.5, got ${dsi}`);\n    assert.ok(dsi <= 1);\n  });\n\n  test('is deterministic for a fixed seed', () => {\n    const input = threeByFourFixture();\n    const run1 = computeDSI(input, 'b', { trials: 150, magnitude: 0.3, seed: 7 });\n    const run2 = computeDSI(input, 'b', { trials: 150, magnitude: 0.3, seed: 7 });\n    assert.equal(run1.dsi, run2.dsi);\n  });\n\n  test('a single option always has DSI 1', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'only' }],\n      criteria: [{ id: 'c1', weight: 1, direction: 'maximize' }],\n      scores: { only: { c1: 1 } },\n    };\n    const { dsi } = computeDSI(input, 'only');\n    assert.equal(dsi, 1);\n  });\n});\n\ndescribe('Decision Flip Point (DFP)', () => {\n  test('a near-tied pair has a small, findable flip point on the deciding criterion', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'p' }, { id: 'q' }],\n      criteria: [\n        { id: 'c1', weight: 1, direction: 'maximize' },\n        { id: 'c2', weight: 1, direction: 'maximize' },\n      ],\n      scores: {\n        p: { c1: 10, c2: 1 },\n        q: { c1: 1, c2: 10 },\n      },\n    };\n    const dfp = computeDFP(input, 'p', { maxRange: 5, step: 0.01 });\n    assert.equal(dfp.length, 2);\n    const found = dfp.find((f) => f.relativeChange !== null);\n    assert.ok(found, 'expected at least one criterion to flip the near-tied pair within range');\n    assert.ok((found!.relativeChange as number) > 0);\n    assert.equal(found!.challengerOptionId, 'q');\n  });\n\n  test('a landslide winner may have no flip point within a small search range', () => {\n    const input = threeByFourFixture();\n    const dfp = computeDFP(input, 'b', { maxRange: 0.05, step: 0.01 });\n    assert.equal(dfp.length, 4);\n    // Every entry is a well-formed DecisionFlipPoint whether or not a flip was found.\n    for (const entry of dfp) {\n      assert.ok(typeof entry.criterionId === 'string');\n      assert.ok(entry.relativeChange === null || entry.relativeChange > 0);\n    }\n  });\n\n  test('a single option has no flip point for any criterion', () => {\n    const input: DecisionScoreInput = {\n      options: [{ id: 'only' }],\n      criteria: [{ id: 'c1', weight: 1, direction: 'maximize' }],\n      scores: { only: { c1: 1 } },\n    };\n    const dfp = computeDFP(input, 'only');\n    assert.equal(dfp.length, 1);\n    assert.equal(dfp[0].relativeChange, null);\n    assert.equal(dfp[0].challengerOptionId, null);\n  });\n});\n\ndescribe('DecisionScoreModel — Model interface', () => {\n  test('manifest matches the Model/ModelManifest contract', () => {\n    const model = new DecisionScoreModel();\n    assert.equal(model.manifest.id, 'magenais.decision-score');\n    assert.equal(model.manifest.trust, 'experimental');\n    assert.ok(model.manifest.runtimes.includes('builtin-local'));\n    assert.ok(model.manifest.capabilities.includes('decision-ranking'));\n  });\n\n  test('execute() returns a normalized, successful ModelResponse for valid input', async () => {\n    const model = new DecisionScoreModel();\n    const response = await model.execute({ input: threeByFourFixture() });\n    assert.equal(response.success, true);\n    assert.equal(response.modelId, 'magenais.decision-score');\n    assert.equal(response.output.topOptionId, 'b');\n    assert.ok(response.explanation && response.explanation.includes('sensitivity estimate'));\n    assert.ok(response.warnings && response.warnings.length > 0);\n    assert.equal(response.metadata?.datasetSize, 3);\n    assert.equal(response.metadata?.algorithm, 'normalized-weighted-sum');\n  });\n\n  test('execute() throws DecisionScoreValidationError (not a rejected success:false) on invalid input', async () => {\n    const model = new DecisionScoreModel();\n    await assert.rejects(\n      () => model.execute({ input: { options: [], criteria: [], scores: {} } }),\n      DecisionScoreValidationError\n    );\n  });\n\n  test('execute() rejects empty input the same way as a direct validateInput() call', async () => {\n    const model = new DecisionScoreModel();\n    // @ts-expect-error — deliberately malformed for the test\n    await assert.rejects(() => model.execute({ input: {} }), DecisionScoreValidationError);\n  });\n\n  test('execute() is deterministic for a fixed seed', async () => {\n    const model = new DecisionScoreModel();\n    const input = threeByFourFixture();\n    const r1 = await model.execute({ input, options: { seed: 5, perturbationTrials: 100 } });\n    const r2 = await model.execute({ input, options: { seed: 5, perturbationTrials: 100 } });\n    assert.equal(r1.output.dsi, r2.output.dsi);\n    assert.deepEqual(r1.output.ranking, r2.output.ranking);\n  });\n});\n"}</script>
+<div class="doc-modal-backdrop" id="docModal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle" onclick="if (event.target === this) closeDocModal();">
+<div class="doc-modal">
+<div class="doc-modal-head">
+<div class="doc-modal-head-text">
+<span class="doc-modal-eyebrow">Viewing file</span>
+<span class="doc-modal-title" id="docModalTitle">Document</span>
+</div>
+<div class="doc-modal-actions">
+<a class="doc-modal-raw" id="docModalRaw" href="#" target="_blank" rel="noopener">Open raw</a>
+<button type="button" class="doc-modal-close" onclick="closeDocModal()" aria-label="Close">&times;</button>
+</div>
+</div>
+<div class="doc-modal-body" id="docModalBody"><p class="doc-modal-status">Loading&hellip;</p></div>
+</div>
+</div>
+<script>
+(function () {
+  var __docDataEl = document.getElementById('__doc_data__');
+  window.__DOC_DATA__ = __docDataEl ? JSON.parse(__docDataEl.textContent) : {};
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function mdToHtml(md) {
+    var codeBlocks = [];
+    var html = md.replace(/```[a-zA-Z0-9]*\n([\s\S]*?)```/g, function (m, code) {
+      codeBlocks.push('<pre><code>' + escapeHtml(code.replace(/\n$/, '')) + '</code></pre>');
+      return '\u0000' + (codeBlocks.length - 1) + '\u0000';
+    });
+    html = escapeHtml(html);
+    html = html
+      .replace(/^###### (.*)$/gm, '<h6>$1</h6>')
+      .replace(/^##### (.*)$/gm, '<h5>$1</h5>')
+      .replace(/^#### (.*)$/gm, '<h4>$1</h4>')
+      .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.*)$/gm, '<h1>$1</h1>');
+    html = html
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    html = html.replace(/(^|\n)[-*] (.*)/g, function (m, pre, text) { return pre + '<li>' + text + '</li>'; });
+    html = html.replace(/(<li>[\s\S]*?<\/li>\n?)+/g, function (m) { return '<ul>' + m + '</ul>'; });
+    html = html.split(/\n{2,}/).map(function (block) {
+      block = block.trim();
+      if (block === '') return '';
+      if (/^<(h\d|ul|pre|table)/.test(block)) return block;
+      return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+    }).join('\n');
+    html = html.replace(/\u0000(\d+)\u0000/g, function (m, i) { return codeBlocks[parseInt(i, 10)]; });
+    return html;
+  }
+  function renderDoc(body, url, text) {
+    if (/\.(md|markdown)$/i.test(url)) {
+      body.innerHTML = mdToHtml(text);
+    } else {
+      body.innerHTML = '<pre><code>' + escapeHtml(text) + '</code></pre>';
+    }
+  }
+  window.openDocModal = function (url, title) {
+    var backdrop = document.getElementById('docModal');
+    var body = document.getElementById('docModalBody');
+    var titleEl = document.getElementById('docModalTitle');
+    var rawEl = document.getElementById('docModalRaw');
+    titleEl.textContent = title || url;
+    rawEl.href = url;
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Every linked file is embedded directly in this page at build time (see the
+    // __DOC_DATA__ JSON block below), so viewing it here never depends on fetch() —
+    // which browsers block for local file:// pages and which would otherwise be the
+    // only way this worked. fetch() below is kept purely as a fallback for any URL
+    // that was not embedded (e.g. an external link opened in the viewer by mistake).
+    var embedded = window.__DOC_DATA__ && Object.prototype.hasOwnProperty.call(window.__DOC_DATA__, url)
+      ? window.__DOC_DATA__[url] : null;
+    if (embedded !== null) {
+      renderDoc(body, url, embedded);
+      return;
+    }
+    body.innerHTML = '<p class="doc-modal-status">Loading&hellip;</p>';
+    fetch(url, { cache: 'no-store' })
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.text(); })
+      .then(function (text) { renderDoc(body, url, text); })
+      .catch(function () {
+        body.innerHTML = '<p class="doc-modal-status">This file could not be loaded here &mdash; <a href="' + url + '" target="_blank" rel="noopener">open it directly</a> instead.</p>';
+      });
+  };
+  window.closeDocModal = function () {
+    document.getElementById('docModal').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeDocModal();
+  });
+  document.querySelectorAll('a[data-doc]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      openDocModal(a.getAttribute('href'), a.getAttribute('data-doc-title') || a.textContent.trim());
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
